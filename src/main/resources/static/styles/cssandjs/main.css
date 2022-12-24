@@ -1,0 +1,23 @@
+html, body, .board {
+    height: 100%;
+    width: 100%;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+
+.card {
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image {
+    width: 150px;
+    height: 150px;
+    border: 1px solid black;
+}
