@@ -2,6 +2,9 @@ package cz.czechitas.pexeso;
 
 import cz.czechitas.pexeso.model.Board;
 import cz.czechitas.pexeso.model.Card;
+import cz.czechitas.pexeso.service.BoardService;
+import cz.czechitas.pexeso.service.RoundService;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,36 +15,48 @@ import java.util.Optional;
 
 @Controller
 public class PairsController {
-    private final Board board = BoardFactory.createBoard();
-    private final PairChoice pairChoice = new PairChoice();
 
-    @GetMapping("/board")
-    public String board(Model model) {
-        model.addAttribute("board", board);
+    private BoardService boardService;
+    private RoundService roundService;
+
+    public PairsController(BoardService boardService, RoundService roundService) {
+        this.boardService = boardService;
+        this.roundService = roundService;
+    }
+
+    @GetMapping("/pexeso")
+    public String newBoard(Model model) {
+        Board board = boardService.createBoard();
+        return "redirect:/pexeso/" + board.getId();
+    }
+
+    @GetMapping("/pexeso/{boardId}")
+    public String getBoard(@PathVariable Integer boardId, Model model) {
+        Optional<Board> boardOptional = boardService.getBoardById(boardId);
+        if (boardOptional.isEmpty()) {
+            return "redirect:/pexeso";
+        }
+        model.addAttribute("board", boardOptional.get());
         return "board";
     }
 
-    @PostMapping("/board/{id}")
-    public String turnCard(@PathVariable Integer id) {
-        String redirectToBoardPath = "redirect:/board";
-
-        if (pairChoice.isFull()) {
-            if (pairChoice.isCorrect()) {
-                pairChoice.updateChoicesToFound();
-            }
-            pairChoice.unselectChoices();
-            pairChoice.cleanChoices();
+    @PostMapping("/pexeso/{boardId}/{cardId}")
+    public String turnCard(@PathVariable("boardId") Integer boardId, @PathVariable("cardId") Integer cardId) {
+        Optional<Board> boardOptional = boardService.getBoardById(boardId);
+        if (boardOptional.isEmpty()) {
+            return "redirect:/pexeso";
         }
 
-        Optional<Card> card = board.getCards().stream().filter(card1 -> card1.getId() == id).findFirst();
+        Board board = boardOptional.get();
+        Optional<Card> selectedCard = board.getCards().stream()
+                .filter(boardCard -> boardCard.getId() == cardId)
+                .findFirst();
 
-        if (card.isEmpty()) {
-            return redirectToBoardPath;
+        if (selectedCard.isEmpty()) {
+            return "redirect:/pexeso/" + boardId;
         }
 
-        Card currentCard = card.get();
-        currentCard.setTurned(true);
-        pairChoice.addCard(currentCard);
-        return redirectToBoardPath;
+        roundService.selectCard(selectedCard.get(), board);
+        return "redirect:/pexeso/" + boardId;
     }
 }

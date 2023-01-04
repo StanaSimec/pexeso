@@ -1,40 +1,44 @@
 package cz.czechitas.pexeso.model;
-import java.awt.*;
 
 public class Card {
-    private final int id;
-    private PexesoImage image;
-    private boolean isTurned;
-    private boolean isFound;
-
-    public Card(int id, PexesoImage image) {
-        this.id = id;
-        this.image = image;
-        this.isTurned = false;
-        this.isFound = false;
-    }
+    private int id;
+    private String imagePath;
+    private boolean isSelected;
+    private boolean isPaired;
 
     public int getId() {
         return id;
     }
 
-    public PexesoImage getImage() {
-        return image;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setImage(PexesoImage image) {
-        this.image = image;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public boolean getIsSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+    }
+
+    public void setPaired(boolean isPaired) {
+        this.isPaired = isPaired;
+    }
+
+    public boolean getIsPaired() {
+        return isPaired;
     }
 
     public boolean isShowed() {
-        return isFound || isTurned;
-    }
-
-    public void setTurned(boolean turned) {
-        isTurned = turned;
-    }
-
-    public void setFound(boolean found) {
-        isFound = found;
+        return isSelected || isPaired;
     }
 }
