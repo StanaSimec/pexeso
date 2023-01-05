@@ -13,6 +13,7 @@ public class BoardRowMapper implements RowMapper<Board> {
     public Board mapRow(ResultSet rs, int rowNum) throws SQLException {
         Board board = new Board();
         board.setId(rs.getInt("id"));
+        board.setHash(rs.getString("hash"));
         return board;
     }
 }

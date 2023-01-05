@@ -27,12 +27,12 @@ public class PairsController {
     @GetMapping("/pexeso")
     public String newBoard(Model model) {
         Board board = boardService.createBoard();
-        return "redirect:/pexeso/" + board.getId();
+        return "redirect:/pexeso/" + board.getHash();
     }
 
-    @GetMapping("/pexeso/{boardId}")
-    public String getBoard(@PathVariable Integer boardId, Model model) {
-        Optional<Board> boardOptional = boardService.getBoardById(boardId);
+    @GetMapping("/pexeso/{boardHash}")
+    public String getBoard(@PathVariable String boardHash, Model model) {
+        Optional<Board> boardOptional = boardService.getBoardByHash(boardHash);
         if (boardOptional.isEmpty()) {
             return "redirect:/pexeso";
         }
@@ -40,9 +40,9 @@ public class PairsController {
         return "board";
     }
 
-    @PostMapping("/pexeso/{boardId}/{cardId}")
-    public String turnCard(@PathVariable("boardId") Integer boardId, @PathVariable("cardId") Integer cardId) {
-        Optional<Board> boardOptional = boardService.getBoardById(boardId);
+    @PostMapping("/pexeso/{boardHash}/{cardId}")
+    public String turnCard(@PathVariable("boardHash") String boardHash, @PathVariable("cardId") Integer cardId) {
+        Optional<Board> boardOptional = boardService.getBoardByHash(boardHash);
         if (boardOptional.isEmpty()) {
             return "redirect:/pexeso";
         }
@@ -53,10 +53,10 @@ public class PairsController {
                 .findFirst();
 
         if (selectedCard.isEmpty()) {
-            return "redirect:/pexeso/" + boardId;
+            return "redirect:/pexeso/" + board.getHash();
         }
 
         roundService.selectCard(selectedCard.get(), board);
-        return "redirect:/pexeso/" + boardId;
+        return "redirect:/pexeso/" + board.getHash();
     }
 }

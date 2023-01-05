@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 
 import cz.czechitas.pexeso.dao.BoardDao;
@@ -39,14 +40,16 @@ public class BoardServiceImpl implements BoardService {
         List<Card> cards = cardDao.getCardsForBoardId(boardId);
         board.setCards(cards);
 
+        addHashToBoard(board);
+
         return board;
     }
 
     @Override
-    public Optional<Board> getBoardById(int boardId) {
-        Optional<Board> board = boardDao.getBoardById(boardId);
+    public Optional<Board> getBoardByHash(String boardHash) {
+        Optional<Board> board = boardDao.getBoardByHash(boardHash);
         if (board.isPresent()) {
-            List<Card> cards = cardDao.getCardsForBoardId(boardId);
+            List<Card> cards = cardDao.getCardsForBoardId(board.get().getId());
             board.get().setCards(cards);
         }
         return board;
@@ -58,5 +61,11 @@ public class BoardServiceImpl implements BoardService {
         firstOfPairImages.addAll(secondOfPairImages);
         Collections.shuffle(firstOfPairImages);
         return firstOfPairImages;
+    }
+
+    private void addHashToBoard(Board board) {
+        String hash = DigestUtils.sha256Hex(String.valueOf(board.getId()));
+        boardDao.setHashToBoardId(hash, board.getId());
+        board.setHash(hash);
     }
 }

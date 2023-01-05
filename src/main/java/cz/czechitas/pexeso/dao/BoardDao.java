@@ -7,5 +7,7 @@ import cz.czechitas.pexeso.model.Board;
 public interface BoardDao {
     int createBoard();
 
-    Optional<Board> getBoardById(int boardId);
+    Optional<Board> getBoardByHash(String hash);
+
+    void setHashToBoardId(String hash, int boardId);
 }

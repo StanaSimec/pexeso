@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS board;
 CREATE TABLE board (
     id INT NOT NULL AUTO_INCREMENT,
     player VARCHAR(50),
+    hash VARCHAR(250),
     PRIMARY KEY (id)
 );
 

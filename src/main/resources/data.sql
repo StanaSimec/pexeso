@@ -1,29 +1,28 @@
 INSERT INTO
     image (imagePath)
 VALUES
-    ("one.png");
-
-INSERT INTO
-    image (imagePath)
-VALUES
-    ("two.png");
-
-INSERT INTO
-    image (imagePath)
-VALUES
-    ("three.png");
-
-INSERT INTO
-    image (imagePath)
-VALUES
-    ("four.png");
-
-INSERT INTO
-    image (imagePath)
-VALUES
-    ("five.png");
-
-INSERT INTO
-    image (imagePath)
-VALUES
-    ("six.png");
+    ('argentina.png'),
+    ('brazilie.png'),
+    ('bulharsko.png'),
+    ('cile.png'),
+    ('cina.png'),
+    ('dominikanskarepublika.png'),
+    ('irak.png'),
+    ('iran.png'),
+    ('irsko.png'),
+    ('italie.png'),
+    ('jamajka.png'),
+    ('jar.png'),
+    ('kolumbie.png'),
+    ('lotyssko.png'),
+    ('lucembursko.png'),
+    ('madarsko.png'),
+    ('nemecko.png'),
+    ('nigerie.png'),
+    ('nizozemsko.png'),
+    ('paraguay.png'),
+    ('polsko.png'),
+    ('severnikorea.png'),
+    ('svedsko.png'),
+    ('tunisko.png'),
+    ('ukrajina.png');
