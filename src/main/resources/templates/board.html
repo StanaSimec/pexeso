@@ -16,13 +16,13 @@
         <form
           th:unless="${card.isShowed}"
           action="#"
-          th:action="@{/pexeso/{boardId}/{cardId}(boardId=${board.id}, cardId=${card.id})}"
+          th:action="@{/pexeso/{boardHash}/{cardId}(boardHash=${board.hash}, cardId=${card.id})}"
           method="post"
         >
           <input
             th:unless="${card.isShowed}"
             type="image"
-            th:src="@{/images/pairs.png}"
+            th:src="@{/images/pairs.jpg}"
             alt="Submit"
             src="#"
             class="image"

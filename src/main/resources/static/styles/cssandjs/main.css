@@ -10,7 +10,6 @@ html, body, .board {
 }
 
 .card {
-    border: 1px solid black;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -20,4 +19,9 @@ html, body, .board {
     width: 150px;
     height: 150px;
     border: 1px solid black;
+    border-radius: 25px;
+}
+
+.image:hover {
+    box-shadow: 0 0 5px 5px grey;
 }

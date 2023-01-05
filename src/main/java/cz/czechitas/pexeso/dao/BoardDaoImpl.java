@@ -16,7 +16,7 @@ import cz.czechitas.pexeso.rowmapper.BoardRowMapper;
 
 @Repository
 public class BoardDaoImpl implements BoardDao {
-    
+
     private final JdbcTemplate jdbcTemplate;
 
     public BoardDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -39,12 +39,18 @@ public class BoardDaoImpl implements BoardDao {
     }
 
     @Override
-    public Optional<Board> getBoardById(int boardId) {
+    public Optional<Board> getBoardByHash(String hash) {
         try {
-        String sql = "SELECT * FROM board WHERE id = ?";
-        return Optional.of(jdbcTemplate.queryForObject(sql, new BoardRowMapper(), boardId));
-        } catch(EmptyResultDataAccessException e) {
+            String sql = "SELECT * FROM board WHERE hash = ?;";
+            return Optional.of(jdbcTemplate.queryForObject(sql, new BoardRowMapper(), hash));
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public void setHashToBoardId(String hash, int boardId) {
+        String sql = "UPDATE board SET hash = ? WHERE id = ?;";
+        jdbcTemplate.update(sql, hash, boardId);
     }
 }
