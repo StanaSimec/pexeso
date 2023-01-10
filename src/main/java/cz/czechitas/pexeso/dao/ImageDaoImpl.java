@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import cz.czechitas.pexeso.exception.DatabaseException;
 import cz.czechitas.pexeso.model.Image;
 import cz.czechitas.pexeso.rowmapper.ImageRowMapper;
 
@@ -25,27 +26,34 @@ public class ImageDaoImpl implements ImageDao {
         String sql = "SELECT i.id, i.imagePath, FALSE as selected, FALSE as paired " +
                 "FROM image i " +
                 "ORDER BY RAND() LIMIT 6;";
-        return jdbcTemplate.query(sql, new ImageRowMapper());
+        try {
+            return jdbcTemplate.query(sql, new ImageRowMapper());
+        } catch (Exception exception) {
+            throw new DatabaseException(exception);
+        }
     }
 
     @Override
     public void saveImagesToBoardId(List<Image> images, int boardId) {
         String sql = "INSERT INTO card (boardId, imageId) VALUES (?,?);";
+        try {
+            jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
 
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    Image image = images.get(i);
+                    ps.setInt(1, boardId);
+                    ps.setInt(2, image.getId());
+                }
 
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                Image image = images.get(i);
-                ps.setInt(1, boardId);
-                ps.setInt(2, image.getId());
-            }
-
-            @Override
-            public int getBatchSize() {
-                return images.size();
-            }
-        });
+                @Override
+                public int getBatchSize() {
+                    return images.size();
+                }
+            });
+        } catch (Exception exception) {
+            throw new DatabaseException(exception);
+        }
     }
 
     @Override
@@ -54,6 +62,10 @@ public class ImageDaoImpl implements ImageDao {
                 "FROM card c " +
                 "JOIN image i ON i.id = c.imageId " +
                 "WHERE c.id = ?;";
-        return jdbcTemplate.queryForObject(sql, new ImageRowMapper(), cardId);
+        try {
+            return jdbcTemplate.queryForObject(sql, new ImageRowMapper(), cardId);
+        } catch (Exception exception) {
+            throw new DatabaseException(exception);
+        }
     }
 }

@@ -3,14 +3,14 @@ package cz.czechitas.pexeso.dao;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Objects;
-import java.util.Optional;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
+import cz.czechitas.pexeso.exception.BoardNotFoundException;
+import cz.czechitas.pexeso.exception.DatabaseException;
 import cz.czechitas.pexeso.model.Board;
 import cz.czechitas.pexeso.rowmapper.BoardRowMapper;
 
@@ -33,24 +33,30 @@ public class BoardDaoImpl implements BoardDao {
                 return preparedStatement;
             }, keyHolder);
             return Objects.requireNonNull(keyHolder.getKey()).intValue();
-        } catch (DataAccessException | NullPointerException e) {
-            return 0;
+        } catch (Exception e) {
+            throw new DatabaseException(e);
         }
     }
 
     @Override
-    public Optional<Board> getBoardByHash(String hash) {
+    public Board getBoardByHash(String boardHash) {
         try {
             String sql = "SELECT * FROM board WHERE hash = ?;";
-            return Optional.of(jdbcTemplate.queryForObject(sql, new BoardRowMapper(), hash));
+            return jdbcTemplate.queryForObject(sql, new BoardRowMapper(), boardHash);
         } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            throw new BoardNotFoundException(e);
+        } catch (Exception e) {
+            throw new DatabaseException(e);
         }
     }
 
     @Override
-    public void setHashToBoardId(String hash, int boardId) {
-        String sql = "UPDATE board SET hash = ? WHERE id = ?;";
-        jdbcTemplate.update(sql, hash, boardId);
+    public void setHashToBoardId(String boardHash, int boardId) {
+        try {
+            String sql = "UPDATE board SET hash = ? WHERE id = ?;";
+            jdbcTemplate.update(sql, boardHash, boardId);
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
     }
 }

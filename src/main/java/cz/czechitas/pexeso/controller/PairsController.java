@@ -1,7 +1,6 @@
 package cz.czechitas.pexeso.controller;
 
 import cz.czechitas.pexeso.model.Board;
-import cz.czechitas.pexeso.model.Card;
 import cz.czechitas.pexeso.service.BoardService;
 import cz.czechitas.pexeso.service.RoundService;
 
@@ -10,8 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.Optional;
 
 @Controller
 public class PairsController {
@@ -32,15 +29,10 @@ public class PairsController {
 
     @GetMapping("/pexeso/{boardHash}")
     public String getBoard(@PathVariable String boardHash, Model model) {
-        Optional<Board> boardOptional = boardService.getBoardByHash(boardHash);
-        if (boardOptional.isEmpty()) {
-            return "redirect:/pexeso";
-        }
-
-        Board board = boardOptional.get();
-        boolean isAllCardsPaired = board.getCards().stream()
+        Board board = boardService.getBoardByHash(boardHash);
+        boolean isBoardFinished = board.getCards().stream()
                 .allMatch(card -> card.getIsPaired() || card.getIsSelected());
-        if (isAllCardsPaired) {
+        if (isBoardFinished) {
             return "redirect:/result/" + boardHash;
         }
 
@@ -50,21 +42,7 @@ public class PairsController {
 
     @PostMapping("/pexeso/{boardHash}/{cardId}")
     public String turnCard(@PathVariable("boardHash") String boardHash, @PathVariable("cardId") Integer cardId) {
-        Optional<Board> boardOptional = boardService.getBoardByHash(boardHash);
-        if (boardOptional.isEmpty()) {
-            return "redirect:/pexeso";
-        }
-
-        Board board = boardOptional.get();
-        Optional<Card> selectedCard = board.getCards().stream()
-                .filter(boardCard -> boardCard.getId() == cardId)
-                .findFirst();
-
-        if (selectedCard.isEmpty()) {
-            return "redirect:/pexeso/" + board.getHash();
-        }
-
-        roundService.selectCard(selectedCard.get(), board);
-        return "redirect:/pexeso/" + board.getHash();
+        roundService.selectCard(cardId, boardHash);
+        return "redirect:/pexeso/" + boardHash;
     }
 }
