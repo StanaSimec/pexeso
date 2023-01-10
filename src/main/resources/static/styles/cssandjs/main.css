@@ -25,3 +25,18 @@ html, body, .board {
 .image:hover {
     box-shadow: 0 0 5px 5px grey;
 }
+
+.paired {
+    display: none;
+}
+
+.selected {
+    box-shadow: 0 0 5px 5px green;
+}
+
+.result {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

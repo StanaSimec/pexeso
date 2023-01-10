@@ -1,4 +1,4 @@
-package cz.czechitas.pexeso;
+package cz.czechitas.pexeso.controller;
 
 import cz.czechitas.pexeso.model.Board;
 import cz.czechitas.pexeso.model.Card;
@@ -36,7 +36,15 @@ public class PairsController {
         if (boardOptional.isEmpty()) {
             return "redirect:/pexeso";
         }
-        model.addAttribute("board", boardOptional.get());
+
+        Board board = boardOptional.get();
+        boolean isAllCardsPaired = board.getCards().stream()
+                .allMatch(card -> card.getIsPaired() || card.getIsSelected());
+        if (isAllCardsPaired) {
+            return "redirect:/result/" + boardHash;
+        }
+
+        model.addAttribute("board", board);
         return "board";
     }
 

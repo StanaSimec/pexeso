@@ -5,4 +5,6 @@ import cz.czechitas.pexeso.model.Card;
 
 public interface RoundService {
     void selectCard(Card card, Board board);
+
+    Integer getRoundCountByBoardHash(String boardHash);
 }

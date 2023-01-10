@@ -12,6 +12,7 @@
           th:if="${card.isShowed}"
           th:src="@{/images/{image}(image=${card.imagePath})}"
           class="image"
+          th:classappend="${card.isPaired} ? paired : selected"
         />
         <form
           th:unless="${card.isShowed}"
@@ -20,7 +21,6 @@
           method="post"
         >
           <input
-            th:unless="${card.isShowed}"
             type="image"
             th:src="@{/images/pairs.jpg}"
             alt="Submit"

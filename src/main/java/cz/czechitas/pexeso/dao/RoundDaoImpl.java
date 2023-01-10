@@ -40,4 +40,10 @@ public class RoundDaoImpl implements RoundDao {
         String sql = "UPDATE round SET secondCardId = ? WHERE boardId = ?;";
         jdbcTemplate.update(sql, secondCardId, board.getId());
     }
+
+    @Override
+    public Integer getRoundCountByBoard(Board board) {
+        String sql = "SELECT COUNT(*) FROM round WHERE boardId = ?;";
+        return jdbcTemplate.queryForObject(sql, Integer.class, board.getId());
+    }
 }

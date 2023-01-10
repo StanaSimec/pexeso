@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import cz.czechitas.pexeso.dao.BoardDao;
 import cz.czechitas.pexeso.dao.CardDao;
 import cz.czechitas.pexeso.dao.ImageDao;
 import cz.czechitas.pexeso.dao.RoundDao;
@@ -18,11 +19,13 @@ public class RoundServiceImpl implements RoundService {
     private final RoundDao roundDao;
     private final CardDao cardDao;
     private final ImageDao imageDao;
+    private final BoardDao boardDao;
 
-    public RoundServiceImpl(RoundDao roundDao, CardDao cardDao, ImageDao imageDao) {
+    public RoundServiceImpl(RoundDao roundDao, CardDao cardDao, ImageDao imageDao, BoardDao boardDao) {
         this.roundDao = roundDao;
         this.cardDao = cardDao;
         this.imageDao = imageDao;
+        this.boardDao = boardDao;
     }
 
     @Override
@@ -43,6 +46,15 @@ public class RoundServiceImpl implements RoundService {
         } else {
             roundDao.saveSecondCard(card.getId(), board);
         }
+    }
+
+    @Override
+    public Integer getRoundCountByBoardHash(String boardHash) {
+        Optional<Board> boardOptional = boardDao.getBoardByHash(boardHash);
+        if(boardOptional.isPresent()) {
+            return roundDao.getRoundCountByBoard(boardOptional.get());
+        }
+        return 0;
     }
 
     private void handleFullRound(Round round, Board board) {

@@ -11,4 +11,6 @@ public interface RoundDao {
     void saveFirstCard(int firstCardId, Board board);
 
     void saveSecondCard(int secondCardId, Board board);
+
+    Integer getRoundCountByBoard(Board board);
 }
