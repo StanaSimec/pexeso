@@ -3,7 +3,6 @@ package cz.czechitas.pexeso.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
@@ -46,12 +45,10 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Optional<Board> getBoardByHash(String boardHash) {
-        Optional<Board> board = boardDao.getBoardByHash(boardHash);
-        if (board.isPresent()) {
-            List<Card> cards = cardDao.getCardsForBoardId(board.get().getId());
-            board.get().setCards(cards);
-        }
+    public Board getBoardByHash(String boardHash) {
+        Board board = boardDao.getBoardByHash(boardHash);
+        List<Card> cards = cardDao.getCardsForBoardId(board.getId());
+        board.setCards(cards);
         return board;
     }
 

@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import cz.czechitas.pexeso.dao.BoardDao;
 import cz.czechitas.pexeso.dao.CardDao;
 import cz.czechitas.pexeso.dao.ImageDao;
 import cz.czechitas.pexeso.dao.RoundDao;
+import cz.czechitas.pexeso.exception.CardNotFoundException;
 import cz.czechitas.pexeso.model.Board;
 import cz.czechitas.pexeso.model.Card;
 import cz.czechitas.pexeso.model.Image;
@@ -19,19 +19,27 @@ public class RoundServiceImpl implements RoundService {
     private final RoundDao roundDao;
     private final CardDao cardDao;
     private final ImageDao imageDao;
-    private final BoardDao boardDao;
+    private final BoardService boardService;
 
-    public RoundServiceImpl(RoundDao roundDao, CardDao cardDao, ImageDao imageDao, BoardDao boardDao) {
+    public RoundServiceImpl(RoundDao roundDao, CardDao cardDao, ImageDao imageDao, BoardService boardService) {
         this.roundDao = roundDao;
         this.cardDao = cardDao;
         this.imageDao = imageDao;
-        this.boardDao = boardDao;
+        this.boardService = boardService;
     }
 
     @Override
-    public void selectCard(Card card, Board board) {
+    public void selectCard(int cardId, String boardHash) {
 
-        Optional<Round> lastRoundOptional = getLastRoundForBoardId(board);
+        Board board = boardService.getBoardByHash(boardHash);
+
+        Card selectedCard = board.getCards().stream()
+                .filter(boardCard -> boardCard.getId() == cardId)
+                .findFirst()
+                .orElseThrow(() -> new CardNotFoundException(
+                        "Cannot find card with id " + cardId + " in board id" + board.getId()));
+
+        Optional<Round> lastRoundOptional = roundDao.getLastRoundByBoardId(board.getId());
         if (lastRoundOptional.isPresent()) {
             Round lastRound = lastRoundOptional.get();
             if (isRoundFull(lastRound)) {
@@ -39,22 +47,19 @@ public class RoundServiceImpl implements RoundService {
             }
         }
 
-        cardDao.setIsCardSelected(true, board.getId(), card.getId());
+        cardDao.setIsCardSelected(true, board.getId(), selectedCard.getId());
 
         if (isRoundEmpty(lastRoundOptional)) {
-            roundDao.saveFirstCard(card.getId(), board);
+            roundDao.saveFirstCard(selectedCard.getId(), board);
         } else {
-            roundDao.saveSecondCard(card.getId(), board);
+            roundDao.saveSecondCard(selectedCard.getId(), board);
         }
     }
 
     @Override
     public Integer getRoundCountByBoardHash(String boardHash) {
-        Optional<Board> boardOptional = boardDao.getBoardByHash(boardHash);
-        if(boardOptional.isPresent()) {
-            return roundDao.getRoundCountByBoard(boardOptional.get());
-        }
-        return 0;
+        Board board = boardService.getBoardByHash(boardHash);
+        return roundDao.getRoundCountByBoard(board);
     }
 
     private void handleFullRound(Round round, Board board) {
@@ -62,10 +67,6 @@ public class RoundServiceImpl implements RoundService {
             pairsRoundCards(board, round);
         }
         unselectRoundCards(board, round);
-    }
-
-    private Optional<Round> getLastRoundForBoardId(Board board) {
-        return roundDao.getLastRoundByBoardId(board.getId());
     }
 
     private boolean isRoundFull(Round round) {
