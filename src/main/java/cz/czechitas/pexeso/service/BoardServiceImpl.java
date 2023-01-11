@@ -52,6 +52,11 @@ public class BoardServiceImpl implements BoardService {
         return board;
     }
 
+    public boolean isBoardFinished(Board board) {
+        return board.getCards().stream()
+                .allMatch(card -> card.getIsPaired() || card.getIsSelected());
+    }
+
     private List<Image> createBoardImages() {
         List<Image> firstOfPairImages = imageDao.getRandomImages();
         List<Image> secondOfPairImages = new ArrayList<>(firstOfPairImages);
