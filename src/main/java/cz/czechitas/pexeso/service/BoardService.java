@@ -6,4 +6,6 @@ public interface BoardService {
     Board createBoard();
 
     Board getBoardByHash(String boardHash);
+
+    boolean isBoardFinished(Board board);
 }

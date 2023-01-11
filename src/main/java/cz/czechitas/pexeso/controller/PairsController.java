@@ -30,12 +30,9 @@ public class PairsController {
     @GetMapping("/pexeso/{boardHash}")
     public String getBoard(@PathVariable String boardHash, Model model) {
         Board board = boardService.getBoardByHash(boardHash);
-        boolean isBoardFinished = board.getCards().stream()
-                .allMatch(card -> card.getIsPaired() || card.getIsSelected());
-        if (isBoardFinished) {
+        if (boardService.isBoardFinished(board)) {
             return "redirect:/result/" + boardHash;
         }
-
         model.addAttribute("board", board);
         return "board";
     }
