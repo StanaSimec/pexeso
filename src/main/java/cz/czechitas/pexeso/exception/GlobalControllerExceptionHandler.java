@@ -9,19 +9,19 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(DatabaseException.class)
     public String handledatabaseException(Model model) {
-        model.addAttribute("message", "Chyba v databázovi, opakujte akci později");
+        model.addAttribute("message", "Chyba v databázi, opakujte akci později");
         return "error";
     }
 
     @ExceptionHandler(BoardNotFoundException.class)
     public String handleBoardNotFoundException(Model model) {
-        model.addAttribute("message", "Hra nebyla nalezena, zkuste vytvořit novou hru.");
+        model.addAttribute("message", "Hra nebyla nalezena, vytvořte novou hru.");
         return "error";
     }
 
     @ExceptionHandler(CardNotFoundException.class)
     public String handleCardNotFoundException(Model model) {
-        model.addAttribute("message", "Karta nebyla nalezena, zkuste akci později.");
+        model.addAttribute("message", "Karta nebyla nalezena, zvolte jinou kartu.");
         return "error";
     }
 }
